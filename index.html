@@ -1,0 +1,788 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kindness Board – A Wall of Hope | College Palliative Care Initiative</title>
+  <meta name="description" content="Share words of hope, encouragement, prayers, and gratitude for palliative care patients and caregivers. A college social welfare initiative.">
+  
+  <!-- Google Fonts: Plus Jakarta Sans & Nunito -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <!-- QR Code Library (QRCode.js) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+  <!-- Canvas Confetti for Celebration Effects -->
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Floating Ambient Particles Canvas -->
+  <canvas id="ambientCanvas"></canvas>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar" id="mainNavbar">
+    <div class="nav-container">
+      <a href="#hero" class="nav-brand">
+        <span class="brand-heart">❤️</span>
+        <span class="brand-text">Kindness <span class="brand-highlight">Board</span></span>
+      </a>
+
+      <div class="nav-menu" id="navMenu">
+        <a href="#hero" class="nav-link active" onclick="setActiveNav(this)">Home</a>
+        <a href="#board" class="nav-link" onclick="setActiveNav(this)">Kindness Board</a>
+        <a href="#about" class="nav-link" onclick="setActiveNav(this)">About</a>
+        <a href="#timeline" class="nav-link" onclick="setActiveNav(this)">Timeline</a>
+        <a href="#gallery" class="nav-link" onclick="setActiveNav(this)">Gallery</a>
+        <a href="#contact" class="nav-link" onclick="setActiveNav(this)">Contact</a>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn btn-inspire" onclick="openInspireModal()" title="Get a random dose of inspiration">
+          <i data-lucide="sparkles"></i>
+          <span>Inspire Me</span>
+        </button>
+        
+        <button class="btn btn-qr" onclick="openQRModal()" title="Generate Event QR Code">
+          <i data-lucide="qr-code"></i>
+        </button>
+
+        <a href="#submit" class="btn btn-primary nav-cta">
+          <i data-lucide="heart"></i>
+          <span>Share Kindness</span>
+        </a>
+
+        <button class="btn btn-admin-icon" onclick="openAdminModal()" title="Admin Dashboard">
+          <i data-lucide="shield-check"></i>
+        </button>
+
+        <button class="nav-toggle" id="navToggle" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main>
+    <!-- HERO SECTION -->
+    <section class="hero-section" id="hero">
+      <div class="hero-backdrop-glow"></div>
+      <div class="container hero-container">
+        <div class="hero-content">
+          <div class="hero-badge">
+            <span class="badge-dot"></span>
+            <span>College Palliative Care Support Initiative</span>
+          </div>
+          <h1 class="hero-title">Kindness Board</h1>
+          <p class="hero-quote">
+            “One kind word can brighten someone’s darkest day.”
+          </p>
+          <p class="hero-description">
+            A safe space for students, faculty, and visitors to leave anonymous or signed words of hope, prayers, and heartfelt gratitude for palliative care patients and dedicated caregivers.
+          </p>
+          <div class="hero-buttons">
+            <a href="#submit" class="btn btn-primary btn-large glow-effect">
+              <i data-lucide="heart-handshake"></i>
+              <span>Share Kindness</span>
+            </a>
+            <a href="#board" class="btn btn-secondary btn-large">
+              <i data-lucide="layout-grid"></i>
+              <span>Explore Board</span>
+            </a>
+          </div>
+        </div>
+
+        <div class="hero-visual">
+          <div class="hero-card-stack">
+            <div class="hero-floating-card card-1">
+              <div class="card-icon">🌸</div>
+              <p>“Sending peace and strength to everyone courageously fighting today. You are never alone!”</p>
+              <div class="card-author">— Student, Medical Dept</div>
+            </div>
+            <div class="hero-floating-card card-2">
+              <div class="card-icon">🕊️</div>
+              <p>“Thank you to the extraordinary caregivers who give their hearts every single hour.”</p>
+              <div class="card-author">— Anonymous Faculty</div>
+            </div>
+            <div class="hero-floating-card card-3">
+              <div class="card-icon">✨</div>
+              <p>“May comfort and warmth fill your heart today. We believe in your strength.”</p>
+              <div class="card-author">— Visitor</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- DAILY FEATURED MESSAGE -->
+    <section class="featured-section" id="featuredSection">
+      <div class="container">
+        <div class="featured-card">
+          <div class="featured-header">
+            <span class="featured-pill"><i data-lucide="sun"></i> Daily Featured Message</span>
+            <button class="btn-icon-subtle" onclick="loadNextFeatured()" title="Refresh featured message">
+              <i data-lucide="refresh-cw"></i>
+            </button>
+          </div>
+          <div class="featured-body" id="featuredMessageBody">
+            <!-- Dynamic Content loaded via JS -->
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- LIVE STATISTICS SECTION -->
+    <section class="stats-section">
+      <div class="container">
+        <div class="stats-grid">
+          <div class="stat-card">
+            <div class="stat-icon icon-blue"><i data-lucide="message-square"></i></div>
+            <div class="stat-value" id="statTotalMessages">0</div>
+            <div class="stat-label">Total Messages</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon icon-green"><i data-lucide="users"></i></div>
+            <div class="stat-value" id="statParticipants">0</div>
+            <div class="stat-label">Total Participants</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon icon-lavender"><i data-lucide="send"></i></div>
+            <div class="stat-value" id="statDelivered">0</div>
+            <div class="stat-label">Messages Delivered</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-icon icon-peach"><i data-lucide="calendar"></i></div>
+            <div class="stat-value" id="statDays">14</div>
+            <div class="stat-label">Days of Kindness</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PUBLIC KINDNESS BOARD -->
+    <section class="board-section" id="board">
+      <div class="container">
+        <div class="section-header center">
+          <span class="section-subtitle">Wall of Hope</span>
+          <h2 class="section-title">Explore Kindness Messages</h2>
+          <p class="section-desc">Read heartfelt messages sent by our campus community and guests.</p>
+        </div>
+
+        <!-- Filter & Search Controls -->
+        <div class="board-controls">
+          <div class="search-box">
+            <i data-lucide="search" class="search-icon"></i>
+            <input type="text" id="boardSearchInput" placeholder="Search by keyword, author, or category..." oninput="handleBoardSearch()">
+          </div>
+
+          <div class="sort-box">
+            <label for="boardSortSelect"><i data-lucide="arrow-up-down"></i> Sort:</label>
+            <select id="boardSortSelect" onchange="renderBoard()">
+              <option value="newest">Newest First</option>
+              <option value="oldest">Oldest First</option>
+              <option value="warmth">Most Warmth ❤️</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="category-tabs" id="categoryTabs">
+          <button class="category-btn active" data-category="all" onclick="filterCategory('all', this)">All Categories</button>
+          <button class="category-btn" data-category="Words of Hope" onclick="filterCategory('Words of Hope', this)">🌿 Words of Hope</button>
+          <button class="category-btn" data-category="Prayer" onclick="filterCategory('Prayer', this)">🕊️ Prayer</button>
+          <button class="category-btn" data-category="Gratitude" onclick="filterCategory('Gratitude', this)">🌸 Gratitude</button>
+          <button class="category-btn" data-category="Encouragement" onclick="filterCategory('Encouragement', this)">💪 Encouragement</button>
+          <button class="category-btn" data-category="Thank You Caregiver" onclick="filterCategory('Thank You Caregiver', this)">❤️ Caregiver Thanks</button>
+          <button class="category-btn" data-category="Inspirational Quote" onclick="filterCategory('Inspirational Quote', this)">✨ Quotes</button>
+          <button class="category-btn" data-category="General Kindness" onclick="filterCategory('General Kindness', this)">☀️ General Kindness</button>
+        </div>
+
+        <!-- Cards Masonry Container -->
+        <div class="board-grid" id="boardGrid">
+          <!-- Dynamically populated card items -->
+        </div>
+
+        <!-- Load More / Infinite Wall Trigger -->
+        <div class="board-footer-action center" id="boardFooterAction">
+          <button class="btn btn-outline" onclick="loadMoreMessages()">
+            <i data-lucide="sparkle"></i> Load More Messages
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SUBMIT MESSAGE FORM SECTION -->
+    <section class="submit-section" id="submit">
+      <div class="container">
+        <div class="submit-card">
+          <div class="submit-card-header">
+            <div class="header-icon"><i data-lucide="edit-3"></i></div>
+            <h2>Share Your Kindness</h2>
+            <p>Your message will be reviewed by our student team and delivered to patients & caregivers at our partner Palliative Care Centre.</p>
+          </div>
+
+          <!-- SUCCESS SCREEN (Hidden by default) -->
+          <div id="submitSuccessScreen" class="submit-success-card hidden">
+            <div class="success-animation-icon">❤️</div>
+            <h3>A little kindness has been sent into the world.</h3>
+            <p class="success-subtitle">Thank you for spreading hope and comfort.</p>
+
+            <div class="success-details">
+              <div class="submitted-preview-box" id="submittedPreviewText"></div>
+            </div>
+
+            <div class="success-actions">
+              <button class="btn btn-primary" onclick="resetSubmissionForm()">
+                <i data-lucide="plus-circle"></i> Submit Another Message
+              </button>
+              <a href="#board" class="btn btn-secondary">
+                <i data-lucide="layout-grid"></i> View Kindness Board
+              </a>
+            </div>
+          </div>
+
+          <!-- SUBMISSION FORM -->
+          <form id="kindnessForm" onsubmit="handleMessageSubmit(event)" novalidate>
+            <!-- Auto-save Draft Indicator -->
+            <div class="draft-notice" id="draftNotice">
+              <i data-lucide="check-circle-2"></i> Draft saved automatically
+            </div>
+
+            <div class="form-grid">
+              <!-- Name Field -->
+              <div class="form-group">
+                <label for="authorName">Name <span class="label-optional">(Optional)</span></label>
+                <div class="input-wrapper">
+                  <i data-lucide="user" class="input-icon"></i>
+                  <input type="text" id="authorName" placeholder="Leave blank to stay anonymous" maxlength="50" oninput="triggerAutoSave()">
+                </div>
+              </div>
+
+              <!-- Email Field -->
+              <div class="form-group">
+                <label for="authorEmail">Email <span class="label-optional">(Optional - for updates/certificate)</span></label>
+                <div class="input-wrapper">
+                  <i data-lucide="mail" class="input-icon"></i>
+                  <input type="email" id="authorEmail" placeholder="your.name@college.edu" oninput="triggerAutoSave()">
+                </div>
+              </div>
+
+              <!-- Relationship Field -->
+              <div class="form-group">
+                <label for="authorRelationship">I am a... <span class="label-required">*</span></label>
+                <div class="input-wrapper">
+                  <i data-lucide="user-check" class="input-icon"></i>
+                  <select id="authorRelationship" required onchange="triggerAutoSave()">
+                    <option value="Student" selected>Student</option>
+                    <option value="Faculty">Faculty</option>
+                    <option value="Staff">Staff</option>
+                    <option value="Visitor">Visitor</option>
+                    <option value="Other">Other</option>
+                  </select>
+                </div>
+              </div>
+
+              <!-- Category Field -->
+              <div class="form-group">
+                <label for="messageCategory">Category <span class="label-required">*</span></label>
+                <div class="input-wrapper">
+                  <i data-lucide="tag" class="input-icon"></i>
+                  <select id="messageCategory" required onchange="triggerAutoSave()">
+                    <option value="Words of Hope">Words of Hope 🌿</option>
+                    <option value="Prayer">Prayer 🕊️</option>
+                    <option value="Gratitude">Gratitude 🌸</option>
+                    <option value="Encouragement">Encouragement 💪</option>
+                    <option value="Thank You Caregiver">Thank You Caregiver ❤️</option>
+                    <option value="Inspirational Quote">Inspirational Quote ✨</option>
+                    <option value="General Kindness">General Kindness ☀️</option>
+                  </select>
+                </div>
+              </div>
+            </div>
+
+            <!-- Message Textarea -->
+            <div class="form-group full-width">
+              <div class="textarea-header">
+                <label for="messageContent">Your Message <span class="label-required">*</span></label>
+                <button type="button" class="btn-ai-assist" onclick="generateAiSuggestion()" title="Get gentle wording ideas">
+                  <i data-lucide="sparkles"></i> AI Wording Assist
+                </button>
+              </div>
+
+              <div class="textarea-wrapper">
+                <textarea id="messageContent" rows="4" maxlength="300" placeholder="Write a warm note of hope, encouragement, or appreciation..." required oninput="handleMessageInput()"></textarea>
+                
+                <div class="textarea-footer">
+                  <div class="ai-feedback" id="aiFeedback"></div>
+                  <div class="char-counter">
+                    <span id="charCount">0</span> / 300 characters
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- SPAM CAPTCHA CHALLENGE -->
+            <div class="form-group captcha-group">
+              <label for="captchaInput"><i data-lucide="shield"></i> Simple Verification <span class="label-required">*</span></label>
+              <div class="captcha-flex">
+                <div class="captcha-question" id="captchaQuestion">What is 5 + 3?</div>
+                <input type="number" id="captchaInput" placeholder="Answer" required style="width: 100px;">
+              </div>
+            </div>
+
+            <!-- Confirmation Checkbox -->
+            <div class="form-group checkbox-group">
+              <label class="checkbox-container">
+                <input type="checkbox" id="confirmRespect" required>
+                <span class="checkmark"></span>
+                <span class="checkbox-text">I confirm my message is respectful, appropriate, and intended to bring hope.</span>
+              </label>
+            </div>
+
+            <!-- Submit Button -->
+            <div class="form-actions">
+              <button type="submit" class="btn btn-primary btn-large btn-block" id="btnSubmitMessage">
+                <i data-lucide="heart"></i>
+                <span>Share My Kindness</span>
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section>
+
+    <!-- ABOUT SECTION -->
+    <section class="about-section" id="about">
+      <div class="container">
+        <div class="about-grid">
+          <div class="about-content">
+            <span class="section-subtitle">Our Purpose</span>
+            <h2 class="section-title">Why the Kindness Board Matters</h2>
+            <p>
+              In healthcare and palliative care, medical treatment is only one half of healing. Emotional warmth, spiritual comfort, and knowing that someone out there is caring for you can transform a patient’s journey.
+            </p>
+            <p>
+              Organized by our <strong>College Social Welfare Club</strong> in partnership with regional <strong>Palliative Care Centres</strong>, the Kindness Board collects heartfelt messages from our academic community and gently delivers them directly to patients, caregivers, and hospice staff.
+            </p>
+
+            <div class="about-features">
+              <div class="feature-item">
+                <div class="feature-icon">🌿</div>
+                <div>
+                  <h4>Spreading Hope</h4>
+                  <p>Reminding patients that they are valued, remembered, and surrounded by warm thoughts.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">❤️</div>
+                <div>
+                  <h4>Honoring Caregivers</h4>
+                  <p>Expressing deep gratitude to nurses, doctors, and family members who selflessly care for others.</p>
+                </div>
+              </div>
+              <div class="feature-item">
+                <div class="feature-icon">🛡️</div>
+                <div>
+                  <h4>Safe & Moderated</h4>
+                  <p>Every submission is reviewed by student moderators to maintain a safe, uplifting environment.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="about-card-visual">
+            <div class="visual-badge-card">
+              <div class="badge-icon">🏥</div>
+              <h3>Palliative Care Program</h3>
+              <p>St. Jude College Initiative 2026</p>
+              <div class="divider"></div>
+              <ul class="check-list">
+                <li><i data-lucide="check"></i> 100% Volunteer Driven</li>
+                <li><i data-lucide="check"></i> Hand-Delivered Message Booklets</li>
+                <li><i data-lucide="check"></i> Digital & Physical Wall Display</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EVENT TIMELINE SECTION -->
+    <section class="timeline-section" id="timeline">
+      <div class="container">
+        <div class="section-header center">
+          <span class="section-subtitle">Initiative Journey</span>
+          <h2 class="section-title">Event Timeline</h2>
+          <p class="section-desc">From initial message collection to physical delivery at the palliative care center.</p>
+        </div>
+
+        <div class="timeline-wrapper">
+          <div class="timeline-line"></div>
+
+          <div class="timeline-item completed">
+            <div class="timeline-dot"><i data-lucide="check"></i></div>
+            <div class="timeline-content">
+              <span class="timeline-date">Phase 1 • Launch</span>
+              <h3>Campus Campaign Kickoff</h3>
+              <p>Kindness Board digital platform launched across college departments and student portals.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item active">
+            <div class="timeline-dot"><i data-lucide="heart"></i></div>
+            <div class="timeline-content">
+              <span class="timeline-date">Phase 2 • Ongoing</span>
+              <h3>Message Collection</h3>
+              <p>Students, faculty, and campus visitors write anonymous and signed words of encouragement.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"><i data-lucide="shield-check"></i></div>
+            <div class="timeline-content">
+              <span class="timeline-date">Phase 3 • Moderation</span>
+              <h3>Review & Curation</h3>
+              <p>Student welfare team approves submissions and curates printable message booklets.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"><i data-lucide="gift"></i></div>
+            <div class="timeline-content">
+              <span class="timeline-date">Phase 4 • Delivery</span>
+              <h3>Care Centre Visit</h3>
+              <p>Volunteers visit the Palliative Care Unit to deliver printed Kindness Booklets & digital displays.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"><i data-lucide="award"></i></div>
+            <div class="timeline-content">
+              <span class="timeline-date">Phase 5 • Completion</span>
+              <h3>Impact & Certificates</h3>
+              <p>Distribution of digital participation certificates to all registered contributors.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- GALLERY SECTION -->
+    <section class="gallery-section" id="gallery">
+      <div class="container">
+        <div class="section-header center">
+          <span class="section-subtitle">Moments of Hope</span>
+          <h2 class="section-title">Event & Visit Gallery</h2>
+          <p class="section-desc">Snapshots of student volunteers, card design workshops, and community moments.</p>
+        </div>
+
+        <div class="gallery-grid">
+          <div class="gallery-item">
+            <div class="gallery-card placeholder-art art-1">
+              <div class="gallery-overlay">
+                <h4>Message Collection Drive</h4>
+                <p>Students sharing notes at the campus kiosk</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <div class="gallery-card placeholder-art art-2">
+              <div class="gallery-overlay">
+                <h4>Palliative Center Visit</h4>
+                <p>Hand-delivering handwritten encouragement cards</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <div class="gallery-card placeholder-art art-3">
+              <div class="gallery-overlay">
+                <h4>Caregiver Honor Day</h4>
+                <p>Special notes of gratitude for nursing staff</p>
+              </div>
+            </div>
+          </div>
+
+          <div class="gallery-item">
+            <div class="gallery-card placeholder-art art-4">
+              <div class="gallery-overlay">
+                <h4>Volunteer Curation Team</h4>
+                <p>Organizing messages for the final compilation</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TESTIMONIALS SECTION -->
+    <section class="testimonials-section">
+      <div class="container">
+        <div class="section-header center">
+          <span class="section-subtitle">Reflections</span>
+          <h2 class="section-title">What Kindness Means to Us</h2>
+        </div>
+
+        <div class="testimonials-grid">
+          <div class="testimonial-card">
+            <p class="testimonial-text">“Writing a note only took me two minutes, but knowing it might make a patient smile when they feel isolated makes it deeply meaningful.”</p>
+            <div class="testimonial-author">
+              <div class="avatar">AN</div>
+              <div>
+                <strong>Anya N.</strong>
+                <span>3rd Year Nursing Student</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <p class="testimonial-text">“Caregivers often carry heavy emotional weight silently. Receiving these words of appreciation gives us strength to keep caring.”</p>
+            <div class="testimonial-author">
+              <div class="avatar">DR</div>
+              <div>
+                <strong>Dr. R. Sharma</strong>
+                <span>Palliative Care Director</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="testimonial-card">
+            <p class="testimonial-text">“The Kindness Board brings our entire campus together around compassion and empathy. It’s the best part of our welfare drive.”</p>
+            <div class="testimonial-author">
+              <div class="avatar">MK</div>
+              <div>
+                <strong>Meera K.</strong>
+                <span>Social Welfare Club Coordinator</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT SECTION -->
+    <section class="contact-section" id="contact">
+      <div class="container">
+        <div class="contact-grid">
+          <div class="contact-info">
+            <span class="section-subtitle">Get in Touch</span>
+            <h2>College Social Welfare Club</h2>
+            <p>St. Jude College of Health Sciences & Community Welfare Department.</p>
+
+            <ul class="contact-list">
+              <li><i data-lucide="building"></i> St. Jude College Main Campus, Block C</li>
+              <li><i data-lucide="mail"></i> kindnessboard@stjude.edu</li>
+              <li><i data-lucide="instagram"></i> @kindnessboard_stjude</li>
+              <li><i data-lucide="heart"></i> Partnered with Regional Palliative Care Center</li>
+            </ul>
+          </div>
+
+          <div class="contact-box-card">
+            <h3>Have Questions or Want to Volunteer?</h3>
+            <p>Reach out to our student coordinator team for campaign details or partnerships.</p>
+            <a href="mailto:kindnessboard@stjude.edu" class="btn btn-primary">
+              <i data-lucide="send"></i> Send Us an Email
+            </a>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="logo">❤️ Kindness Board</div>
+          <p>Made with ❤️ for spreading hope, comfort, and compassion.</p>
+        </div>
+
+        <div class="footer-links">
+          <a href="#hero">Home</a>
+          <a href="#board">Kindness Board</a>
+          <a href="#about">About Initiative</a>
+          <a href="#privacyModal" onclick="openPrivacyModal()">Privacy Policy</a>
+          <a href="#termsModal" onclick="openTermsModal()">Terms of Use</a>
+          <a href="#admin" onclick="openAdminModal()">Admin Login</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 St. Jude College Social Welfare Initiative. All messages are moderated for safety.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODAL: INSPIRE ME POPUP -->
+  <div id="inspireModal" class="modal-backdrop hidden" onclick="closeModalOnBackdrop(event, 'inspireModal')">
+    <div class="modal-card inspire-modal-card">
+      <button class="modal-close" onclick="closeModal('inspireModal')"><i data-lucide="x"></i></button>
+      <div class="inspire-sparkle-icon">✨</div>
+      <span class="inspire-label">Random Dose of Kindness</span>
+      
+      <div class="inspire-content-box" id="inspireContentBox">
+        <p class="inspire-text">"Loading inspiration..."</p>
+        <div class="inspire-author">— Someone Caring</div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="generateRandomInspireMessage()">
+          <i data-lucide="refresh-cw"></i> Another One
+        </button>
+        <button class="btn btn-primary" onclick="copyInspireMessage()">
+          <i data-lucide="copy"></i> Copy Message
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: QR CODE GENERATOR -->
+  <div id="qrModal" class="modal-backdrop hidden" onclick="closeModalOnBackdrop(event, 'qrModal')">
+    <div class="modal-card qr-modal-card">
+      <button class="modal-close" onclick="closeModal('qrModal')"><i data-lucide="x"></i></button>
+      <div class="section-header center" style="margin-bottom: 1rem;">
+        <span class="section-subtitle">Scan to Share</span>
+        <h3>Event QR Code</h3>
+      </div>
+      <p style="text-align: center; color: var(--text-muted); font-size: 0.95rem; margin-bottom: 1.5rem;">
+        Display this QR Code at event booths, college kiosks, or palliative care center bulletin boards.
+      </p>
+
+      <div class="qr-code-wrapper center" id="qrcode"></div>
+      <p class="qr-target-url" id="qrTargetUrl"></p>
+
+      <div class="modal-actions" style="margin-top: 1.5rem;">
+        <button class="btn btn-primary" onclick="window.print()">
+          <i data-lucide="printer"></i> Print Event Poster
+        </button>
+        <button class="btn btn-secondary" onclick="closeModal('qrModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ADMIN DASHBOARD -->
+  <div id="adminModal" class="modal-backdrop hidden">
+    <div class="modal-card admin-modal-card">
+      <button class="modal-close" onclick="closeModal('adminModal')"><i data-lucide="x"></i></button>
+      
+      <!-- ADMIN LOGIN VIEW -->
+      <div id="adminLoginView" class="admin-view">
+        <div class="admin-header">
+          <div class="admin-icon"><i data-lucide="lock"></i></div>
+          <h2>Admin Dashboard</h2>
+          <p>Moderator Login for St. Jude College Welfare Team</p>
+        </div>
+
+        <form onsubmit="handleAdminLogin(event)" style="margin-top: 1.5rem;">
+          <div class="form-group">
+            <label for="adminPass">Passcode</label>
+            <input type="password" id="adminPass" placeholder="Enter moderator passcode (Default: kindness2026)" required style="width: 100%;">
+          </div>
+          <button type="submit" class="btn btn-primary btn-block">Log In</button>
+          
+          <div style="text-align: center; margin-top: 1rem;">
+            <button type="button" class="btn-link" onclick="quickDemoLogin()" style="color: var(--primary); font-size: 0.9rem;">
+              ⚡ Quick Demo Login (Skip Passcode)
+            </button>
+          </div>
+        </form>
+      </div>
+
+      <!-- ADMIN DASHBOARD PANEL VIEW -->
+      <div id="adminPanelView" class="admin-view hidden">
+        <div class="admin-panel-top">
+          <div>
+            <h2>Moderation Dashboard</h2>
+            <span class="badge badge-success">LoggedIn as Admin</span>
+          </div>
+          <div class="admin-top-actions">
+            <button class="btn btn-outline btn-sm" onclick="exportMessagesCSV()">
+              <i data-lucide="download"></i> Export CSV
+            </button>
+            <button class="btn btn-secondary btn-sm" onclick="adminLogout()">
+              <i data-lucide="log-out"></i> Logout
+            </button>
+          </div>
+        </div>
+
+        <!-- Admin Metrics -->
+        <div class="admin-stats-row">
+          <div class="admin-stat-item">
+            <span class="stat-num" id="adminStatPending">0</span>
+            <span class="stat-lbl">Pending Review</span>
+          </div>
+          <div class="admin-stat-item">
+            <span class="stat-num" id="adminStatApproved">0</span>
+            <span class="stat-lbl">Approved</span>
+          </div>
+          <div class="admin-stat-item">
+            <span class="stat-num" id="adminStatRejected">0</span>
+            <span class="stat-lbl">Rejected</span>
+          </div>
+          <div class="admin-stat-item">
+            <span class="stat-num" id="adminStatPopular">Gratitude</span>
+            <span class="stat-lbl">Top Category</span>
+          </div>
+        </div>
+
+        <!-- Admin Tabs -->
+        <div class="admin-tabs">
+          <button class="admin-tab active" data-tab="pending" onclick="switchAdminTab('pending', this)">
+            Pending Queue (<span id="pendingCountTab">0</span>)
+          </button>
+          <button class="admin-tab" data-tab="approved" onclick="switchAdminTab('approved', this)">
+            Approved Messages
+          </button>
+          <button class="admin-tab" data-tab="rejected" onclick="switchAdminTab('rejected', this)">
+            Rejected Messages
+          </button>
+        </div>
+
+        <!-- Admin Table & List Container -->
+        <div class="admin-table-container">
+          <table class="admin-table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>Author / Role</th>
+                <th>Message Content</th>
+                <th>Submitted</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="adminTableBody">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PRIVACY & TERMS -->
+  <div id="infoModal" class="modal-backdrop hidden" onclick="closeModalOnBackdrop(event, 'infoModal')">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal('infoModal')"><i data-lucide="x"></i></button>
+      <h3 id="infoModalTitle">Privacy Policy</h3>
+      <div id="infoModalBody" style="margin-top: 1rem; line-height: 1.6; color: var(--text-muted); font-size: 0.95rem;"></div>
+    </div>
+  </div>
+
+  <!-- Application Logic Scripts -->
+  <script src="storage.js"></script>
+  <script src="aiHelper.js"></script>
+  <script src="app.js"></script>
+
+</body>
+</html>
