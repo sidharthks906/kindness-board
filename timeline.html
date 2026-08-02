@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Timeline – Kindness Board Initiative</title>
+  <meta name="description" content="Explore the campaign journey, key phases, and milestones of our Palliative Care Kindness Board.">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  
+  <!-- Custom Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- Floating Ambient Particles Canvas -->
+  <canvas id="ambientCanvas"></canvas>
+
+  <!-- Toast Notification Container -->
+  <div id="toastContainer" class="toast-container" aria-live="polite"></div>
+
+  <!-- Navigation Bar -->
+  <nav class="navbar" id="mainNavbar">
+    <div class="nav-container">
+      <a href="index.html" class="nav-brand">
+        <span class="brand-heart">❤️</span>
+        <span class="brand-text">Kindness <span class="brand-highlight">Board</span></span>
+      </a>
+
+      <div class="nav-menu" id="navMenu">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="board.html" class="nav-link">Kindness Board</a>
+        <a href="about.html" class="nav-link">About</a>
+        <a href="timeline.html" class="nav-link active">Timeline</a>
+        <a href="gallery.html" class="nav-link">Gallery</a>
+        <a href="contact.html" class="nav-link">Contact</a>
+      </div>
+
+      <div class="nav-actions">
+        <button class="btn btn-inspire" onclick="openInspireModal()" title="Get a random dose of inspiration">
+          <i data-lucide="sparkles"></i>
+          <span>Inspire Me</span>
+        </button>
+        
+        <button class="btn btn-qr" onclick="openQRModal()" title="Generate Event QR Code">
+          <i data-lucide="qr-code"></i>
+        </button>
+
+        <a href="board.html#submit" class="btn btn-primary nav-cta">
+          <i data-lucide="heart"></i>
+          <span>Share Kindness</span>
+        </a>
+
+        <button class="nav-toggle" id="navToggle" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
+          <i data-lucide="menu"></i>
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <header class="page-header">
+    <div class="page-header-glow"></div>
+    <div class="container">
+      <span class="section-subtitle">Initiative Journey</span>
+      <h1 class="page-title">Event Timeline</h1>
+      <p class="page-desc">
+        From initial message collection across college departments to physical delivery at partner palliative care centers.
+      </p>
+    </div>
+  </header>
+
+  <main>
+    <!-- EVENT TIMELINE SECTION -->
+    <section class="timeline-section" id="timeline" style="padding: 4rem 0;">
+      <div class="container">
+        <div class="timeline-wrapper">
+          <div class="timeline-line"></div>
+
+          <div class="timeline-item completed">
+            <div class="timeline-dot"><i data-lucide="check"></i></div>
+            <div class="timeline-content">
+              <span class="timeline-date">Phase 1 • Launch</span>
+              <h3>Campus Campaign Kickoff</h3>
+              <p>Kindness Board digital platform launched across college departments, social welfare clubs, and student portals.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item active">
+            <div class="timeline-dot"><i data-lucide="heart"></i></div>
+            <div class="timeline-content">
+              <span class="timeline-date">Phase 2 • Ongoing</span>
+              <h3>Message Collection</h3>
+              <p>Students, faculty, and campus visitors write anonymous and signed words of encouragement, prayers, and caregiver thanks.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"><i data-lucide="shield-check"></i></div>
+            <div class="timeline-content">
+              <span class="timeline-date">Phase 3 • Moderation</span>
+              <h3>Review & Curation</h3>
+              <p>Student welfare team approves submissions, scans for profanity, and curates printable message booklets.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"><i data-lucide="gift"></i></div>
+            <div class="timeline-content">
+              <span class="timeline-date">Phase 4 • Delivery</span>
+              <h3>Care Centre Visit</h3>
+              <p>Volunteers visit the Palliative Care Unit to deliver printed Kindness Booklets & digital displays to patients and nurses.</p>
+            </div>
+          </div>
+
+          <div class="timeline-item">
+            <div class="timeline-dot"><i data-lucide="award"></i></div>
+            <div class="timeline-content">
+              <span class="timeline-date">Phase 5 • Completion</span>
+              <h3>Impact & Certificates</h3>
+              <p>Distribution of digital participation certificates to all registered student and faculty contributors.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALL TO ACTION -->
+    <section style="padding: 4rem 0; text-align: center; background: var(--bg-main);">
+      <div class="container">
+        <h2>Be Part of Phase 2 Today</h2>
+        <p style="color: var(--text-muted); margin: 0.5rem auto 1.5rem auto; max-width: 600px;">
+          Message collection is currently active. Add your message to the physical booklet before delivery!
+        </p>
+        <a href="board.html#submit" class="btn btn-primary btn-large">
+          <i data-lucide="edit-3"></i> Add Your Message
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <div class="logo">❤️ Kindness Board</div>
+          <p>Made with ❤️ for spreading hope, comfort, and compassion.</p>
+        </div>
+
+        <div class="footer-links">
+          <a href="index.html">Home</a>
+          <a href="board.html">Kindness Board</a>
+          <a href="about.html">About Initiative</a>
+          <a href="timeline.html">Timeline</a>
+          <a href="gallery.html">Gallery</a>
+          <a href="contact.html">Contact</a>
+          <a href="#privacyModal" onclick="openPrivacyModal()">Privacy Policy</a>
+          <a href="#termsModal" onclick="openTermsModal()">Terms of Use</a>
+          <a href="admin.html">Admin Login</a>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        <p>&copy; 2026 St. Jude College Social Welfare Initiative. All messages are moderated for safety.</p>
+      </div>
+    </div>
+  </footer>
+
+  <!-- MODALS -->
+  <div id="inspireModal" class="modal-backdrop hidden" onclick="closeModalOnBackdrop(event, 'inspireModal')">
+    <div class="modal-card inspire-modal-card">
+      <button class="modal-close" onclick="closeModal('inspireModal')"><i data-lucide="x"></i></button>
+      <div class="inspire-sparkle-icon">✨</div>
+      <span class="inspire-label">Random Dose of Kindness</span>
+      <div class="inspire-content-box" id="inspireContentBox">
+        <p class="inspire-text">"Loading inspiration..."</p>
+        <div class="inspire-author">— Someone Caring</div>
+      </div>
+      <div class="modal-actions">
+        <button class="btn btn-secondary" onclick="generateRandomInspireMessage()"><i data-lucide="refresh-cw"></i> Another One</button>
+        <button class="btn btn-primary" onclick="copyInspireMessage()"><i data-lucide="copy"></i> Copy Message</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="qrModal" class="modal-backdrop hidden" onclick="closeModalOnBackdrop(event, 'qrModal')">
+    <div class="modal-card qr-modal-card">
+      <button class="modal-close" onclick="closeModal('qrModal')"><i data-lucide="x"></i></button>
+      <div class="section-header center" style="margin-bottom: 1rem;">
+        <span class="section-subtitle">Scan to Share</span>
+        <h3>Event QR Code</h3>
+      </div>
+      <div class="qr-code-wrapper center" id="qrcode"></div>
+      <p class="qr-target-url" id="qrTargetUrl"></p>
+      <div class="modal-actions" style="margin-top: 1.5rem;">
+        <button class="btn btn-primary" onclick="window.print()"><i data-lucide="printer"></i> Print Event Poster</button>
+        <button class="btn btn-secondary" onclick="closeModal('qrModal')">Close</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="infoModal" class="modal-backdrop hidden" onclick="closeModalOnBackdrop(event, 'infoModal')">
+    <div class="modal-card">
+      <button class="modal-close" onclick="closeModal('infoModal')"><i data-lucide="x"></i></button>
+      <h3 id="infoModalTitle">Privacy Policy</h3>
+      <div id="infoModalBody" style="margin-top: 1rem; line-height: 1.6; color: var(--text-muted); font-size: 0.95rem;"></div>
+    </div>
+  </div>
+
+  <!-- Supabase Client JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="js/supabaseConfig.js"></script>
+  <script src="js/storage.js"></script>
+  <script src="js/aiHelper.js"></script>
+  <script src="js/app.js"></script>
+
+</body>
+</html>

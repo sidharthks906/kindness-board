@@ -567,7 +567,7 @@ function initQRCode() {
   if (!qrContainer) return;
   qrContainer.innerHTML = '';
 
-  const targetUrl = window.location.origin + window.location.pathname + '#submit';
+  const targetUrl = window.location.origin + window.location.pathname.replace(/\/[^\/]*$/, '/board.html#submit');
   document.getElementById('qrTargetUrl').textContent = targetUrl;
 
   if (window.QRCode) {
