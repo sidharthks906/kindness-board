@@ -63,10 +63,6 @@
           <span>Share Kindness</span>
         </a>
 
-        <button class="btn btn-admin-icon" onclick="openAdminModal()" title="Admin Dashboard">
-          <i data-lucide="shield-check"></i>
-        </button>
-
         <button class="nav-toggle" id="navToggle" onclick="toggleMobileMenu()" aria-label="Toggle navigation menu">
           <i data-lucide="menu"></i>
         </button>
@@ -261,19 +257,26 @@
             <div class="form-grid">
               <!-- Name Field -->
               <div class="form-group">
-                <label for="authorName">Name <span class="label-optional">(Optional)</span></label>
+                <label for="authorName">Name <span class="label-required">*</span></label>
                 <div class="input-wrapper">
                   <i data-lucide="user" class="input-icon"></i>
-                  <input type="text" id="authorName" placeholder="Leave blank to stay anonymous" maxlength="50" oninput="triggerAutoSave()">
+                  <input type="text" id="authorName" placeholder="Your name" maxlength="50" required oninput="triggerAutoSave()">
+                </div>
+                <div class="checkbox-group" style="margin: 0.5rem 0 0 0;">
+                  <label class="checkbox-container">
+                    <input type="checkbox" id="showNamePublicly" checked>
+                    <span class="checkmark"></span>
+                    <span class="checkbox-text" style="font-size: 0.8rem;">Show my name on the public board</span>
+                  </label>
                 </div>
               </div>
 
               <!-- Email Field -->
               <div class="form-group">
-                <label for="authorEmail">Email <span class="label-optional">(Optional - for updates/certificate)</span></label>
+                <label for="authorEmail">Email <span class="label-required">*</span></label>
                 <div class="input-wrapper">
                   <i data-lucide="mail" class="input-icon"></i>
-                  <input type="email" id="authorEmail" placeholder="your.name@college.edu" oninput="triggerAutoSave()">
+                  <input type="email" id="authorEmail" placeholder="your.name@college.edu" required oninput="triggerAutoSave()">
                 </div>
               </div>
 
@@ -615,7 +618,7 @@
           <a href="#about">About Initiative</a>
           <a href="#privacyModal" onclick="openPrivacyModal()">Privacy Policy</a>
           <a href="#termsModal" onclick="openTermsModal()">Terms of Use</a>
-          <a href="#admin" onclick="openAdminModal()">Admin Login</a>
+          <a href="admin.html">Admin Login</a>
         </div>
       </div>
       <div class="footer-bottom">
@@ -671,104 +674,7 @@
     </div>
   </div>
 
-  <!-- MODAL: ADMIN DASHBOARD -->
-  <div id="adminModal" class="modal-backdrop hidden">
-    <div class="modal-card admin-modal-card">
-      <button class="modal-close" onclick="closeModal('adminModal')"><i data-lucide="x"></i></button>
-      
-      <!-- ADMIN LOGIN VIEW -->
-      <div id="adminLoginView" class="admin-view">
-        <div class="admin-header">
-          <div class="admin-icon"><i data-lucide="lock"></i></div>
-          <h2>Admin Dashboard</h2>
-          <p>Moderator Login for St. Jude College Welfare Team</p>
-        </div>
 
-        <form onsubmit="handleAdminLogin(event)" style="margin-top: 1.5rem;">
-          <div class="form-group">
-            <label for="adminPass">Passcode</label>
-            <input type="password" id="adminPass" placeholder="Enter moderator passcode (Default: kindness2026)" required style="width: 100%;">
-          </div>
-          <button type="submit" class="btn btn-primary btn-block">Log In</button>
-          
-          <div style="text-align: center; margin-top: 1rem;">
-            <button type="button" class="btn-link" onclick="quickDemoLogin()" style="color: var(--primary); font-size: 0.9rem;">
-              ⚡ Quick Demo Login (Skip Passcode)
-            </button>
-          </div>
-        </form>
-      </div>
-
-      <!-- ADMIN DASHBOARD PANEL VIEW -->
-      <div id="adminPanelView" class="admin-view hidden">
-        <div class="admin-panel-top">
-          <div>
-            <h2>Moderation Dashboard</h2>
-            <span class="badge badge-success">LoggedIn as Admin</span>
-          </div>
-          <div class="admin-top-actions">
-            <button class="btn btn-outline btn-sm" onclick="exportMessagesCSV()">
-              <i data-lucide="download"></i> Export CSV
-            </button>
-            <button class="btn btn-secondary btn-sm" onclick="adminLogout()">
-              <i data-lucide="log-out"></i> Logout
-            </button>
-          </div>
-        </div>
-
-        <!-- Admin Metrics -->
-        <div class="admin-stats-row">
-          <div class="admin-stat-item">
-            <span class="stat-num" id="adminStatPending">0</span>
-            <span class="stat-lbl">Pending Review</span>
-          </div>
-          <div class="admin-stat-item">
-            <span class="stat-num" id="adminStatApproved">0</span>
-            <span class="stat-lbl">Approved</span>
-          </div>
-          <div class="admin-stat-item">
-            <span class="stat-num" id="adminStatRejected">0</span>
-            <span class="stat-lbl">Rejected</span>
-          </div>
-          <div class="admin-stat-item">
-            <span class="stat-num" id="adminStatPopular">Gratitude</span>
-            <span class="stat-lbl">Top Category</span>
-          </div>
-        </div>
-
-        <!-- Admin Tabs -->
-        <div class="admin-tabs">
-          <button class="admin-tab active" data-tab="pending" onclick="switchAdminTab('pending', this)">
-            Pending Queue (<span id="pendingCountTab">0</span>)
-          </button>
-          <button class="admin-tab" data-tab="approved" onclick="switchAdminTab('approved', this)">
-            Approved Messages
-          </button>
-          <button class="admin-tab" data-tab="rejected" onclick="switchAdminTab('rejected', this)">
-            Rejected Messages
-          </button>
-        </div>
-
-        <!-- Admin Table & List Container -->
-        <div class="admin-table-container">
-          <table class="admin-table">
-            <thead>
-              <tr>
-                <th>Category</th>
-                <th>Author / Role</th>
-                <th>Message Content</th>
-                <th>Submitted</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody id="adminTableBody">
-              <!-- Rendered via JS -->
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
 
   <!-- MODAL: PRIVACY & TERMS -->
   <div id="infoModal" class="modal-backdrop hidden" onclick="closeModalOnBackdrop(event, 'infoModal')">
@@ -778,6 +684,10 @@
       <div id="infoModalBody" style="margin-top: 1rem; line-height: 1.6; color: var(--text-muted); font-size: 0.95rem;"></div>
     </div>
   </div>
+
+  <!-- Supabase Client JS SDK -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="supabaseConfig.js"></script>
 
   <!-- Application Logic Scripts -->
   <script src="storage.js"></script>

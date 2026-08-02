@@ -346,12 +346,13 @@ function handleMessageInput() {
     counterEl.style.color = 'var(--text-muted)';
   }
 
-  // Real-time AI Safety check
+  // Real-time AI Safety & Profanity check
   if (val.length > 5 && window.aiHelper) {
     const safety = window.aiHelper.checkContentSafety(val);
     if (!safety.isSafe) {
       feedbackEl.style.color = '#E11D48';
-      feedbackEl.textContent = safety.reason;
+      const censoredWords = safety.detectedWords.map(w => w[0] + '*'.repeat(w.length - 1)).join(', ');
+      feedbackEl.textContent = `⚠️ Blacklisted word(s) detected: ${censoredWords} — Please revise before submitting.`;
     } else {
       feedbackEl.style.color = 'var(--accent-green)';
       feedbackEl.textContent = '✨ Message looks gentle & appropriate';
@@ -418,9 +419,11 @@ function restoreFormDraft() {
 function handleMessageSubmit(event) {
   event.preventDefault();
 
-  const name = document.getElementById('authorName').value;
+  const rawName = document.getElementById('authorName').value;
   const email = document.getElementById('authorEmail').value;
   const relationship = document.getElementById('authorRelationship').value;
+  const showNamePublicly = document.getElementById('showNamePublicly').checked;
+  const name = showNamePublicly ? rawName : 'Anonymous';
   const category = document.getElementById('messageCategory').value;
   const message = document.getElementById('messageContent').value;
   const captchaInput = parseInt(document.getElementById('captchaInput').value, 10);
@@ -442,10 +445,10 @@ function handleMessageSubmit(event) {
     return;
   }
 
-  // Safety scan
+  // Profanity & Safety scan — show blacklist popup if violation detected
   const safety = window.aiHelper.checkContentSafety(message);
   if (!safety.isSafe) {
-    showToast(`⚠️ ${safety.reason}`);
+    showBlacklistPopup(safety.detectedWords);
     return;
   }
 
@@ -471,7 +474,9 @@ function handleMessageSubmit(event) {
   successScreen.classList.remove('hidden');
   document.getElementById('submittedPreviewText').textContent = `“${message}”`;
 
-  // Update stats
+  // Update board and stats
+  renderBoard();
+  renderDailyFeatured();
   renderStats();
   renderAdminPanel();
 }
@@ -483,6 +488,46 @@ function resetSubmissionForm() {
   document.getElementById('charCount').textContent = '0';
   document.getElementById('aiFeedback').textContent = '';
   generateCaptcha();
+}
+
+function submitForReview() {
+  const rawName = document.getElementById('authorName').value;
+  const email = document.getElementById('authorEmail').value;
+  const relationship = document.getElementById('authorRelationship').value;
+  const category = document.getElementById('messageCategory').value;
+  const message = document.getElementById('messageContent').value;
+  const showNamePublicly = document.getElementById('showNamePublicly').checked;
+  const name = showNamePublicly ? rawName : 'Anonymous';
+
+  // Add the message (it auto-inserts as 'approved')
+  const newMsg = window.storageEngine.addMessage({ name, email, relationship, category, message });
+
+  // Immediately set it to 'pending' so it goes to admin review queue
+  const messages = window.storageEngine.getAllMessages();
+  const msg = messages.find(m => m.id === newMsg.id);
+  if (msg) {
+    msg.status = 'pending';
+    window.storageEngine.saveAllMessages(messages);
+    // Sync pending status to Supabase
+    if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+      supabaseClient.from('messages').update({ status: 'pending' }).eq('id', newMsg.id);
+    }
+  }
+
+  closeBlacklistPopup();
+
+  // Clear draft
+  localStorage.removeItem(STORAGE_KEY_DRAFT);
+  document.getElementById('draftNotice').style.display = 'none';
+
+  // Show Success Screen
+  document.getElementById('kindnessForm').style.display = 'none';
+  const successScreen = document.getElementById('submitSuccessScreen');
+  successScreen.classList.remove('hidden');
+  document.getElementById('submittedPreviewText').textContent = `"${message}" (Submitted for Review)`;
+
+  renderStats();
+  if (typeof renderAdminPanel === 'function') renderAdminPanel();
 }
 
 /* ==========================================================================
@@ -592,6 +637,9 @@ function switchAdminTab(tab, tabEl) {
 }
 
 function renderAdminPanel() {
+  // Guard: skip if admin elements don't exist on this page
+  if (!document.getElementById('adminStatPending')) return;
+
   const stats = window.storageEngine.getStats();
 
   document.getElementById('adminStatPending').textContent = stats.pendingCount;

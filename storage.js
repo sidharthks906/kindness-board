@@ -1,132 +1,66 @@
 /* ==========================================================================
-   STORAGE ENGINE & SEED DATA SERVICE
-   Manages persistent LocalStorage state for messages, moderation, and stats.
+   STORAGE ENGINE & SUPABASE / LOCALSTORAGE HYBRID SERVICE
+   Manages persistent state for messages, moderation, and stats.
+   Supports seamless Supabase sync with automatic LocalStorage fallback.
    ========================================================================== */
 
 const STORAGE_KEY_MESSAGES = 'kindness_board_messages_v1';
 const STORAGE_KEY_STATS = 'kindness_board_stats_v1';
 const STORAGE_KEY_FEATURED_INDEX = 'kindness_board_featured_idx_v1';
 
-// SEED DATA: Touching, genuine messages for palliative care patients & caregivers
-const INITIAL_SEED_MESSAGES = [
-  {
-    id: 'seed-1',
-    name: 'Ananya Sharma',
-    email: '',
-    relationship: 'Student',
-    category: 'Words of Hope',
-    message: 'To everyone courageously fighting today: even on the quietest days, your strength inspires us all. Sending you immense warmth and peace.',
-    date: '2026-07-28',
-    status: 'approved',
-    warmthCount: 34,
-    featured: true
-  },
-  {
-    id: 'seed-2',
-    name: 'Prof. David Miller',
-    email: '',
-    relationship: 'Faculty',
-    category: 'Thank You Caregiver',
-    message: 'Deepest gratitude to the extraordinary palliative nurses and doctors. Your gentle hands and compassionate hearts bring light to those in need.',
-    date: '2026-07-29',
-    status: 'approved',
-    warmthCount: 29,
-    featured: false
-  },
-  {
-    id: 'seed-3',
-    name: '',
-    email: '',
-    relationship: 'Student',
-    category: 'Prayer',
-    message: 'May comfort wrap around you like a warm blanket today. You are held in our thoughts, prayers, and hearts every moment.',
-    date: '2026-07-29',
-    status: 'approved',
-    warmthCount: 18,
-    featured: false
-  },
-  {
-    id: 'seed-4',
-    name: 'Rahul V.',
-    email: '',
-    relationship: 'Staff',
-    category: 'Encouragement',
-    message: 'One day at a time, one breath at a time. Never underestimate how much your gentle smile brightens the world around you.',
-    date: '2026-07-30',
-    status: 'approved',
-    warmthCount: 42,
-    featured: false
-  },
-  {
-    id: 'seed-5',
-    name: 'Sarah Jenkins',
-    email: '',
-    relationship: 'Visitor',
-    category: 'Inspirational Quote',
-    message: '“Hope is being able to see that there is light despite all of the darkness.” — Desmond Tutu. Wishing you courage and quiet joy today.',
-    date: '2026-07-30',
-    status: 'approved',
-    warmthCount: 22,
-    featured: false
-  },
-  {
-    id: 'seed-6',
-    name: 'Kavya & Campus Volunteers',
-    email: '',
-    relationship: 'Student',
-    category: 'Gratitude',
-    message: 'Thank you to the families and caregivers who stand as pillars of love and patience. Your dedication is pure grace in action.',
-    date: '2026-07-31',
-    status: 'approved',
-    warmthCount: 15,
-    featured: false
-  },
-  {
-    id: 'seed-7',
-    name: 'Anonymous Student',
-    email: '',
-    relationship: 'Student',
-    category: 'Words of Hope',
-    message: 'Even flowers take time to bloom after winter. Rest gracefully today knowing you are loved and cherished by so many people.',
-    date: '2026-07-31',
-    status: 'approved',
-    warmthCount: 27,
-    featured: false
-  },
-  {
-    id: 'seed-8',
-    name: 'Dr. A. Joseph',
-    email: '',
-    relationship: 'Faculty',
-    category: 'General Kindness',
-    message: 'No effort of love is ever wasted. To all care workers: your empathy is healing humanity one life at a time.',
-    date: '2026-07-31',
-    status: 'approved',
-    warmthCount: 11,
-    featured: false
-  },
-  {
-    id: 'seed-9',
-    name: 'Sneha Patel',
-    email: '',
-    relationship: 'Student',
-    category: 'Words of Hope',
-    message: 'You matter more than words can express. May your day be filled with soft moments, pleasant thoughts, and gentle care.',
-    date: '2026-07-31',
-    status: 'pending',
-    warmthCount: 0,
-    featured: false
-  }
-];
-
 class StorageEngine {
   constructor() {
     this.initStorage();
+    if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+      this.syncFromSupabase();
+    }
   }
 
   initStorage() {
+    // Start fresh with empty messages if no data exists
     if (!localStorage.getItem(STORAGE_KEY_MESSAGES)) {
-      localStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify(INITIAL_SEED_MESSAGES));
+      localStorage.setItem(STORAGE_KEY_MESSAGES, JSON.stringify([]));
+    }
+  }
+
+  async syncFromSupabase() {
+    if (typeof supabaseClient === 'undefined' || !supabaseClient) return;
+
+    try {
+      const { data, error } = await supabaseClient
+        .from('messages')
+        .select('*')
+        .order('created_at', { ascending: false });
+
+      if (error) {
+        console.error('Error fetching messages from Supabase:', error);
+        return;
+      }
+
+      if (data) {
+        const mappedMessages = data.map(m => ({
+          id: m.id,
+          name: m.name || '',
+          email: m.email || '',
+          relationship: m.relationship || 'Student',
+          category: m.category || 'Words of Hope',
+          message: m.message,
+          date: m.date,
+          status: m.status,
+          warmthCount: m.warmth_count || 0,
+          featured: m.featured || false
+        }));
+
+        this.saveAllMessages(mappedMessages);
+
+        // Re-render UI components if they exist
+        if (typeof renderBoard === 'function') renderBoard();
+        if (typeof renderStats === 'function') renderStats();
+        if (typeof renderDailyFeatured === 'function') renderDailyFeatured();
+        if (typeof renderAdminPanel === 'function') renderAdminPanel();
+      }
+    } catch (e) {
+      console.error('Supabase sync exception:', e);
     }
   }
 
@@ -165,13 +99,32 @@ class StorageEngine {
       category: msgData.category || 'Words of Hope',
       message: msgData.message.trim(),
       date: new Date().toISOString().split('T')[0],
-      status: 'pending', // Moderation required
+      status: 'approved', // Auto-approved — visible immediately on the board
       warmthCount: 0,
       featured: false
     };
 
     messages.unshift(newMessage);
     this.saveAllMessages(messages);
+
+    // Sync to Supabase in background if enabled
+    if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+      supabaseClient.from('messages').insert([{
+        id: newMessage.id,
+        name: newMessage.name,
+        email: newMessage.email,
+        relationship: newMessage.relationship,
+        category: newMessage.category,
+        message: newMessage.message,
+        date: newMessage.date,
+        status: newMessage.status,
+        warmth_count: newMessage.warmthCount,
+        featured: newMessage.featured
+      }]).then(({ error }) => {
+        if (error) console.error('Supabase insert error:', error);
+      });
+    }
+
     return newMessage;
   }
 
@@ -181,6 +134,12 @@ class StorageEngine {
     if (msg) {
       msg.status = 'approved';
       this.saveAllMessages(messages);
+
+      if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+        supabaseClient.from('messages').update({ status: 'approved' }).eq('id', id).then(({ error }) => {
+          if (error) console.error('Supabase approve error:', error);
+        });
+      }
     }
   }
 
@@ -190,6 +149,12 @@ class StorageEngine {
     if (msg) {
       msg.status = 'rejected';
       this.saveAllMessages(messages);
+
+      if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+        supabaseClient.from('messages').update({ status: 'rejected' }).eq('id', id).then(({ error }) => {
+          if (error) console.error('Supabase reject error:', error);
+        });
+      }
     }
   }
 
@@ -197,6 +162,12 @@ class StorageEngine {
     let messages = this.getAllMessages();
     messages = messages.filter(m => m.id !== id);
     this.saveAllMessages(messages);
+
+    if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+      supabaseClient.from('messages').delete().eq('id', id).then(({ error }) => {
+        if (error) console.error('Supabase delete error:', error);
+      });
+    }
   }
 
   incrementWarmth(id) {
@@ -205,6 +176,13 @@ class StorageEngine {
     if (msg) {
       msg.warmthCount = (msg.warmthCount || 0) + 1;
       this.saveAllMessages(messages);
+
+      if (typeof supabaseClient !== 'undefined' && supabaseClient) {
+        supabaseClient.from('messages').update({ warmth_count: msg.warmthCount }).eq('id', id).then(({ error }) => {
+          if (error) console.error('Supabase warmth update error:', error);
+        });
+      }
+
       return msg.warmthCount;
     }
     return 0;
@@ -214,7 +192,6 @@ class StorageEngine {
     const approved = this.getApprovedMessages();
     if (approved.length === 0) return null;
     
-    // Pick based on day index or fallback
     let featuredIdx = parseInt(localStorage.getItem(STORAGE_KEY_FEATURED_INDEX) || '0', 10);
     if (featuredIdx >= approved.length) {
       featuredIdx = 0;
@@ -237,7 +214,6 @@ class StorageEngine {
     const pending = all.filter(m => m.status === 'pending');
     const rejected = all.filter(m => m.status === 'rejected');
 
-    // Unique participants count
     const participantSet = new Set();
     all.forEach(m => {
       if (m.email) participantSet.add(m.email);
@@ -251,8 +227,8 @@ class StorageEngine {
       pendingCount: pending.length,
       rejectedCount: rejected.length,
       participantsCount: participantSet.size,
-      deliveredCount: Math.floor(approved.length * 1.5) + 40, // Messages delivered to center plus printed copies
-      daysActive: 14
+      deliveredCount: approved.length,
+      daysActive: all.length > 0 ? 1 : 0
     };
   }
 
