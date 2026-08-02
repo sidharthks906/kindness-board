@@ -93,5 +93,5 @@ If setting up your own Supabase instance:
 
 ## 📄 License & Attribution
 
-Organized by the **St. Jude College Social Welfare Club** in partnership with regional Palliative Care Units.  
+Organized by **Amrita Vishwa Vidyapeetham** ([https://www.amrita.edu](https://www.amrita.edu)) in partnership with regional Palliative Care Units.  
 Distributed under the MIT License for educational and community welfare initiatives.
