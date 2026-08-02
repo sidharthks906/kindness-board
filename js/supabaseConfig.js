@@ -10,12 +10,7 @@ const SUPABASE_ANON_KEY = "sb_publishable_tbrCmUgCuXE2pIlwq5raLA_HwNq6JYz"; // e
 // 2. Initialize Supabase Client
 let supabaseClient = null;
 
-if (
-  typeof supabase !== 'undefined' &&
-  SUPABASE_URL &&
-  SUPABASE_ANON_KEY &&
-  !SUPABASE_URL.includes("https://iuwoiznrvkhszzplyrqm.supabase.co")
-) {
+if (typeof supabase !== 'undefined' && SUPABASE_URL && SUPABASE_ANON_KEY) {
   try {
     supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
     console.log("✅ Supabase client initialized successfully!");
