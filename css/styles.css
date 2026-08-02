@@ -432,6 +432,7 @@ section {
   margin-bottom: 1rem;
   background: linear-gradient(135deg, #0F172A 0%, #0284C7 100%);
   -webkit-background-clip: text;
+  background-clip: text;
   -webkit-text-fill-color: transparent;
 }
 
